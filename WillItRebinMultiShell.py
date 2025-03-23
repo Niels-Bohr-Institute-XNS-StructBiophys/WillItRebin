@@ -57,11 +57,11 @@ import argparse
 try:
     import wx
 except:
-    print ""
-    print "*************************************************************************"
-    print "* WillItRebin failed to import wxPython - is it correctly installed...? *"
-    print "*************************************************************************"
-    print ""
+    print("")
+    print("*************************************************************************")
+    print("* WillItRebin failed to import wxPython - is it correctly installed...? *")
+    print("*************************************************************************")
+    print("")
     sys.exit(1)
 
 import wx.lib.scrolledpanel
@@ -77,11 +77,10 @@ import pylab
 class MainCls(wx.Frame):
     def __init__(self, parent, id):
         self.cwd = os.getcwd()
-        print("self.cwd = {}".format(self.cwd))
+        print(("self.cwd = {}".format(self.cwd)))
         
         # Initial widgets
         wx.Frame.__init__(self, parent, id, 'Will It Rebin?', style = wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
-        
         BoxSizer = wx.BoxSizer(wx.VERTICAL)
         self.Panel = wx.lib.scrolledpanel.ScrolledPanel(self, -1)
         self.Panel.SetupScrolling(False, True)
@@ -294,7 +293,9 @@ class MainCls(wx.Frame):
         
         # Conclusion of init-function
         self.Panel.SetSizerAndFit(BoxSizer)
-        self.SetSizerAndFit(BoxSizer)
+        FrameSizer = wx.BoxSizer(wx.VERTICAL)
+        FrameSizer.Add(self.Panel, 1, wx.EXPAND)  
+        self.SetSizerAndFit(FrameSizer)
         self.SetAutoLayout(True)
         self.Panel.Layout()
         self.Layout()
@@ -377,8 +378,10 @@ class MainCls(wx.Frame):
                 if y < LowestYValue:
                     LowestYValue = y
             
-        Subplot.set_xscale('log', nonposx = 'clip')
-        Subplot.set_yscale('log', nonposy = 'clip')
+        Subplot.set_xscale('log')
+        Subplot.set_xbound(lower=0)
+        Subplot.set_yscale('log')
+        Subplot.set_ybound(lower=0)
         Subplot.set_ylim(ymin = LowestYValue / 10.0)
         
         Subplot.set_xlabel('q')
@@ -426,8 +429,10 @@ class MainCls(wx.Frame):
                 if y < LowestYValue:
                     LowestYValue = y
         
-        Subplot.set_xscale('log', nonposx = 'clip')
-        Subplot.set_yscale('log', nonposy = 'clip')
+        Subplot.set_xscale('log')
+        Subplot.set_xbound(lower=0)
+        Subplot.set_yscale('log')
+        Subplot.set_ybound(lower=0)
         Subplot.set_ylim(ymin = LowestYValue / 10.0)
         
         Subplot.set_xlabel('q')
@@ -441,18 +446,18 @@ class MainCls(wx.Frame):
     def BrowseDataFnc(self, event):
         
         # do not use os.getcwd(), points always to $HOME
-        FileDialogWindow = wx.FileDialog(None, 'Please select data-file(s)...', defaultDir=self.cwd, defaultFile = '', style = wx.OPEN | wx.MULTIPLE)
+        FileDialogWindow = wx.FileDialog(None, 'Please select data-file(s)...', defaultDir=self.cwd, defaultFile = '', style = wx.FD_OPEN | wx.FD_MULTIPLE)
         
         if FileDialogWindow.ShowModal() == wx.ID_OK:
 #            self.DataPathStr = FileDialogWindow.GetPath()
             self.DataPathStr = FileDialogWindow.GetPaths()
             
-            print(self.DataPathStr)
+            print((self.DataPathStr))
             
             DataPathDisplayStr = ''
             
             for k in range(len(self.DataPathStr)):
-                print self.DataPathStr[k]
+                print(self.DataPathStr[k])
             
             # print only info about first 6 files in list
             for k in range(min(6,len(self.DataPathStr))):
@@ -492,7 +497,7 @@ class MainCls(wx.Frame):
 
 ## Read data files
 def GetData(filename):
-    file = open(filename, 'rU')
+    file = open(filename, 'r')
     data = file.readlines()
     file.close()
     
@@ -588,7 +593,7 @@ def LinRebinFncExt(DataPathStr, SkippedPoints, RebinningFactor, ScaleFactor, QSc
             file.write('### Number of datapoints = ' + str(BinNumber) + '\n')
             
             for i in range(BinNumber):
-                file.write('   ' + '{0:.10e}'.format(xRebinned[i]) + '   ' + '{0:.10e}'.format(yRebinned[i]) + '   ' + '{0:.10e}'.format(wRebinned[i]) + '   0.0\n')
+                file.write('   ' + '{0:.10e}'.format(xRebinned[i]) + '   ' + '{0:.10e}'.format(yRebinned[i]) + '   ' + '{0:.10e}'.format(wRebinned[i]) + '\n')
             
             file.close()
         
@@ -715,7 +720,7 @@ if __name__ == '__main__':
         # cwd = os.getcwd()
         # print(cwd)
         App = wx.App()
-        frame = MainCls(parent = None, id = -1)
+        frame = MainCls(parent=None, id = -1)
         frame.Show()
         App.MainLoop()
     else:
@@ -743,7 +748,7 @@ if __name__ == '__main__':
 
             # parse
             args = ap.parse_args()
-            print args
+            print(args)
 #            print args.filelist
 #            print args.rebinopts
 #            print args.scf
@@ -782,12 +787,12 @@ if __name__ == '__main__':
         else:
             QScaling = 1.0
         
-        print("DataPathStr = {}".format(DataPathStr))
-        print("SkippedPoints = {}".format(SkippedPoints))
-        print("RebinningType = {}".format(args.rebinopts[0]))
-        print("RebinningFactor = {}".format(RebinningFactor))
-        print("ScaleFactor = {}".format(ScaleFactor))
-        print("QScaling = {}".format(QScaling))
+        print(("DataPathStr = {}".format(DataPathStr)))
+        print(("SkippedPoints = {}".format(SkippedPoints)))
+        print(("RebinningType = {}".format(args.rebinopts[0])))
+        print(("RebinningFactor = {}".format(RebinningFactor)))
+        print(("ScaleFactor = {}".format(ScaleFactor)))
+        print(("QScaling = {}".format(QScaling)))
 
         if args.rebinopts[0] == 'log':
             LogRebinFncExt(DataPathStr, SkippedPoints, RebinningFactor, ScaleFactor, QScaling)
